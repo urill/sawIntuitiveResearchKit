@@ -530,7 +530,11 @@ void mtsIntuitiveResearchKitArm::GetRobotData(void)
             CartesianVelocityGetParam.SetValid(true);
             CartesianVelocityGetParam.SetTimestamp(JointsKinematics.Timestamp());
 
-
+            // compute filtered velocity for rotation, direct for linear
+            CartesianVelocityGetParamFiltered.VelocityLinear() = CartesianVelocityGetParam.VelocityLinear();
+            CartesianVelocityGetParamFiltered.VelocityAngular() *= 0.99;
+            CartesianVelocityGetParamFiltered.VelocityAngular() += (0.01 * CartesianVelocityGetParam.VelocityAngular());
+            
             // update wrench based on measured joint current efforts
             mJacobianBodyTranspose.Assign(mJacobianBody.Transpose());
             nmrPInverse(mJacobianBodyTranspose, mJacobianPInverseData);
@@ -1189,7 +1193,7 @@ void mtsIntuitiveResearchKitArm::ControlEffortCartesian(void)
         // either using wrench provided by user or cartesian impedance
         if (mCartesianImpedance) {
             mCartesianImpedanceController.Update(CartesianGetLocalParam,
-                                                 CartesianVelocityGetParam,
+                                                 CartesianVelocityGetParamFiltered,
                                                  mWrenchSet,
                                                  mWrenchBodyOrientationAbsolute);
             force.Assign(mWrenchSet.Force());

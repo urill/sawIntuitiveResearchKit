@@ -284,7 +284,7 @@ public:
 
     // Velocities
     vctFrm4x4 CartesianGetPrevious;
-    prmVelocityCartesianGet CartesianVelocityGetParam;
+    prmVelocityCartesianGet CartesianVelocityGetParam, CartesianVelocityGetParamFiltered;
     vctFrm4x4 CartesianPositionFrm;
 
     // Base frame
