@@ -291,6 +291,8 @@ void mtsIntuitiveResearchKitArm::Init(void)
                                             mStateTableStateCurrent, "GetCurrentState");
         RobotInterface->AddCommandReadState(this->mStateTableState,
                                             mStateTableStateDesired, "GetDesiredState");
+        RobotInterface->AddCommandRead(&mtsIntuitiveResearchKitArm::GetRobotControlState,
+                                       this, "GetRobotControlState", std::string(""));
         // Set
         RobotInterface->AddCommandWrite(&mtsIntuitiveResearchKitArm::SetBaseFrame,
                                         this, "SetBaseFrame");
@@ -1464,4 +1466,9 @@ void mtsIntuitiveResearchKitArm::SetCartesianImpedanceGains(const prmCartesianIm
         mWrenchType = WRENCH_BODY;
         RobotInterface->SendStatus(this->GetName() + ": effort cartesian WRENCH_BODY");
     }
+}
+
+void mtsIntuitiveResearchKitArm::GetRobotControlState(std::string & state) const
+{
+    state = cmnData<mtsIntuitiveResearchKitArmTypes::ControlMode>::HumanReadable(mControlMode);
 }
