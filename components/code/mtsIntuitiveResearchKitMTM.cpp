@@ -230,7 +230,7 @@ void mtsIntuitiveResearchKitMTM::SetGoalHomingArm(void)
 void mtsIntuitiveResearchKitMTM::TransitionArmHomed(void)
 {
     if (mArmState.DesiredStateIsNotCurrent()) {
-        mArmState.SetCurrentState("CALIBRATING_ROLL");
+        mArmState.SetCurrentState("READY");
     }
 }
 

@@ -836,52 +836,8 @@ void mtsIntuitiveResearchKitArm::EnterHomingArm(void)
 
 void mtsIntuitiveResearchKitArm::RunHomingArm(void)
 {
-    static const double extraTime = 2.0 * cmn_s;
-    const double currentTime = this->StateTable.GetTic();
-
-    mJointTrajectory.Reflexxes.Evaluate(JointSet,
-                                        JointVelocitySet,
-                                        mJointTrajectory.Goal,
-                                        mJointTrajectory.GoalVelocity);
-    mtsIntuitiveResearchKitArm::SetPositionJointLocal(JointSet);
-
-    const robReflexxes::ResultType trajectoryResult = mJointTrajectory.Reflexxes.ResultValue();
-    bool isHomed;
-
-    switch (trajectoryResult) {
-
-    case robReflexxes::Reflexxes_WORKING:
-        // if this is the first evaluation, we can't calculate expected completion time
-        if (mJointTrajectory.EndTime == 0.0) {
-            mJointTrajectory.EndTime = currentTime + mJointTrajectory.Reflexxes.Duration();
-            mHomingTimer = mJointTrajectory.EndTime;
-        }
-        break;
-
-    case robReflexxes::Reflexxes_FINAL_STATE_REACHED:
-        // check position
-        mJointTrajectory.GoalError.DifferenceOf(mJointTrajectory.Goal, JointsPID.Position());
-        mJointTrajectory.GoalError.AbsSelf();
-        isHomed = !mJointTrajectory.GoalError.ElementwiseGreaterOrEqual(mJointTrajectory.GoalTolerance).Any();
-        if (isHomed) {
-            PID.SetCheckPositionLimit(true);
-            mArmState.SetCurrentState("ARM_HOMED");
-        } else {
-            // time out
-            if (currentTime > mHomingTimer + extraTime) {
-                CMN_LOG_CLASS_INIT_WARNING << GetName() << ": RunHomingArm: unable to reach home position, error in degrees is "
-                                           << mJointTrajectory.GoalError * (180.0 / cmnPI) << std::endl;
-                RobotInterface->SendError(this->GetName() + ": unable to reach home position during calibration on pots");
-                this->SetDesiredState(mFallbackState);
-            }
-        }
-        break;
-
-    default:
-        RobotInterface->SendError(this->GetName() + ": error while evaluating trajectory");
-        this->SetDesiredState(mFallbackState);
-        break;
-    }
+    PID.SetCheckPositionLimit(true);
+    mArmState.SetCurrentState("READY");
 }
 
 void mtsIntuitiveResearchKitArm::EnterReady(void)
