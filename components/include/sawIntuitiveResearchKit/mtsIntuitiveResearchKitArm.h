@@ -337,7 +337,8 @@ public:
                                                                         classInstantiation));
     }
 
-    inline void SetControlCallback(mtsCallableVoidBase * callback) {
+    inline void
+    SetControlCallback(mtsCallableVoidBase * callback) {
         if (this->mControlCallback != 0) {
             delete this->mControlCallback;
         }
@@ -384,6 +385,8 @@ public:
 
     // Flag to determine if this is connected to actual IO/hardware or simulated
     bool mIsSimulated;
+
+    void GetRobotControlState(std::string &state) const;
 };
 
 CMN_DECLARE_SERVICES_INSTANTIATION(mtsIntuitiveResearchKitArm);
